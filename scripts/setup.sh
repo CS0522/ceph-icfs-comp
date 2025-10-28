@@ -123,13 +123,10 @@ function build_ceph()
 function configure_ips()
 {
     echo "***** Configuring ips *****"
-    # for hostname in ${hostnames[@]}; do
-    #     ssh ${ssh_arg} root@${hostname} "cd ${proj_scripts_path}; bash ./configure_ips.sh >> ${log} 2>&1" &
-    # done
     len=${#hostnames[@]}
     for ((idx=0; idx<${len}; idx++)); do
         echo "Configuring hostname: ${hostnames[idx]}, ip: ${local_ips[idx]}"
-        ssh ${ssh_arg} root@${hostname} << ENDSSH
+        ssh ${ssh_arg} root@${hostnames[idx]} << ENDSSH
             cd ${proj_scripts_path}
             bash ./configure_ips.sh ${local_ips[idx]}
 ENDSSH
@@ -140,7 +137,7 @@ function setup_fn()
 {
     # setup_public_key
     # mount_sda4
-    clone_proj_repo
+    # clone_proj_repo
     # upload_config
     # install_dependencies
     # build_ceph

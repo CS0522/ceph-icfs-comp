@@ -36,8 +36,9 @@ function get_nic_port()
 function configure_ips()
 {
     systemctl restart NetworkManager
-    sleep 5
+    sleep 3
     nmcli connection add type ethernet ifname ${nic_port} con-name ${nic_port} ipv4.addresses ${local_ip}/${netmask} ipv4.gateway 0.0.0.0 ipv4.method manual
+    nmcli connection down ${nic_port} && nmcli connection up ${nic_port}
 }
 
 get_nic_port
