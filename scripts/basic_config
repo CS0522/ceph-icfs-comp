@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+
+# Setup and running params
+# Used by 'source $(dirname $(readlink -f "${BASH_SOURCE[0]}"))/config' command
+
+########## params ##########
+
+# These are basic params, specific params should be configured in each sub-config file
+
+##### versions
+ceph_version="17.2.6"
+
+##### experiment machines
+hostnames=(clnode274.clemson.cloudlab.us 
+           clnode257.clemson.cloudlab.us 
+           clnode280.clemson.cloudlab.us 
+           clnode253.clemson.cloudlab.us)
+client=(clnode274.clemson.cloudlab.us)
+servers=(clnode257.clemson.cloudlab.us 
+         clnode280.clemson.cloudlab.us 
+         clnode253.clemson.cloudlab.us)
+
+##### basic
+cloudlab_username="CS0522"
+# project name
+proj_name="ceph-icfs-comp"
+# github username
+github_user="CS0522"
+# private project repo
+proj_repo="https://github.com/${github_user}/${proj_name}.git"
+## Paths
+home_path="/root/setup"
+# project setup path
+proj_setup_path="${home_path}/${proj_name}"
+# basic scripts path
+proj_scripts_path="${proj_setup_path}/scripts"
+
+# CloudLab server nodes local ips
+server_local_ips="10.10.1.2,10.10.1.3,10.10.1.4"
+
+##### archives filename
+# ceph archive
+ceph_archive="ceph-${ceph_version}.tar.gz"
+ceph_download_base_path="https://download.ceph.com/tarballs"
+
+##### run
+# project output path
+proj_output_path="${home_path}/outputs"
+
+##### device
+# target nvme device name
+# need to be modified
+nvme_dev="nvme0n1"
+# filesystem: ext4
+fs_type="ext4"
+
+
+##### ssh args
+ssh_arg="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ServerAliveInterval=30 -Tq"
+scp_arg="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
