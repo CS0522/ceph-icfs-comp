@@ -12,7 +12,8 @@ function usage()
 ##### params #####
 
 # load config
-source $(dirname $(readlink -f "${BASH_SOURCE[0]}"))/basic_config
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+source ${SCRIPT_DIR}/basic_config
 
 ##### build ceph #####
 
@@ -21,6 +22,8 @@ function build_ceph()
     cd ${home_path}
     wget ${ceph_download_base_path}/${ceph_archive}
     tar -zxf ${ceph_archive}
+
+    source ~/.bashrc
     
     cd ceph-${ceph_version} && rm -rf build
     ./do_cmake.sh

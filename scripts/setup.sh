@@ -24,9 +24,9 @@ log="setup.log"
 ##### params #####
 
 # load config
-source $(dirname $(readlink -f "${BASH_SOURCE[0]}"))/basic_config
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+source ${SCRIPT_DIR}/basic_config
 
-setup_sh_path="$(dirname $(readlink -f "${BASH_SOURCE[0]}"))"
 
 echo "Username: ${username}"
 echo "Client hostname: ${client}"

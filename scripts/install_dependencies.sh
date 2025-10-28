@@ -12,7 +12,8 @@ function usage()
 ##### params #####
 
 # load config
-source $(dirname $(readlink -f "${BASH_SOURCE[0]}"))/basic_config
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+source ${SCRIPT_DIR}/basic_config
 
 ##### install dependencies #####
 
@@ -78,11 +79,11 @@ function install_rabbitmq()
     ## RabbitMQ server repository
     rpm --import 'https://github.com/rabbitmq/signing-keys/releases/download/3.0/cloudsmith.rabbitmq-server.9F4587F226208342.key'
 
-    cp $(dirname $(readlink -f "${BASH_SOURCE[0]}"))/${rabbitmq_repo} /etc/yum.repos.d/
+    cp ${SCRIPT_DIR}/${rabbitmq_repo} /etc/yum.repos.d/
 
     dnf update -y && \
-    dnf install -y logrotate erlang rabbitmq-server \
-                    librabbitmq librabbitmq-devel
+    dnf install -y logrotate erlang rabbitmq-server
+    yum install -y librabbitmq librabbitmq-devel
 }
 
 function install_babeltrace_devel()
