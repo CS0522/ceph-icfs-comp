@@ -37,8 +37,13 @@ proj_setup_path="${home_path}/${proj_name}"
 # basic scripts path
 proj_scripts_path="${proj_setup_path}/scripts"
 
-# CloudLab server nodes local ips
-server_local_ips="10.10.1.2,10.10.1.3,10.10.1.4"
+# CloudLab nodes local ips
+# used by configuring ips
+local_ips=("10.10.1.1"
+           "10.10.1.2"
+           "10.10.1.3"
+           "10.10.1.4")
+netmask="24"
 
 ##### third-party related
 # ceph archive
@@ -61,6 +66,9 @@ proj_output_path="${home_path}/outputs"
 nvme_dev="nvme0n1"
 # filesystem: ext4
 fs_type="ext4"
+# NIC port
+# TODO: can be retrived by ifconfig and awk
+nic_port="ens2f0np0"
 
 
 ##### ssh args

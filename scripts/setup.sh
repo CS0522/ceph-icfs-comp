@@ -8,7 +8,7 @@
 # 3. clone 仓库
 # 4. 上传本地 basic_config 配置
 # 5. 远程机器执行安装、编译，异步
-# 6. 
+# 6. 配置静态 IP
 
 # set -x
 
@@ -19,7 +19,7 @@ function usage()
 
 ##### args #####
 
-log="setup.log"
+log="${home_path}/setup.log"
 
 ##### params #####
 
@@ -43,15 +43,14 @@ function setup_public_key()
 {
     echo "***** Setting up public key *****"
     for hostname in ${hostnames[@]}; do
-        scp ${scp_arg} ~/.ssh/id_rsa.pub ${username}@${hostname}:/home/${username}
+        scp ${scp_arg} ~/.ssh/id_rsa.pub ${username}@${hostname}:~/
         ssh ${ssh_arg} ${username}@${hostname} << ENDSSH
-            cd /home/${username}
+            cd ~
             wget https://raw.githubusercontent.com/CS0522/rocksdb-rubbledb/rubble/rubble/setup-keys.sh
             sudo bash setup-keys.sh
 ENDSSH
         ssh ${ssh_arg} ${username}@${hostname} << ENDSSH
-            cd /home/${username}
-            sudo bash -c "cat ~/id_rsa.pub >> /root/.ssh/authorized_keys"
+            sudo bash -c "cat /users/${username}/id_rsa.pub >> /root/.ssh/authorized_keys"
 ENDSSH
     done
 }
@@ -95,7 +94,7 @@ function upload_config()
             rm -rf ./basic_config
 ENDSSH
         # upload
-        scp ${scp_arg} ${setup_sh_path}/basic_config root@${hostname}:${proj_scripts_path}/basic_config
+        scp ${scp_arg} ${SCRIPT_DIR}/basic_config root@${hostname}:${proj_scripts_path}/basic_config
     done
 }
 
@@ -105,7 +104,7 @@ function install_dependencies()
     echo "***** Installing dependencies *****"
     # Rocky Linux 9
     for hostname in ${hostnames[@]}; do
-        ssh ${ssh_arg} root@${hostname} "cd ${home_path}; rm -rf ${log}; bash ./install_dependencies.sh >> ${log} 2>&1" &
+        ssh ${ssh_arg} root@${hostname} "cd ${proj_scripts_path}; rm -rf ${log}; bash ./install_dependencies.sh >> ${log} 2>&1" &
     done
     wait
 }
@@ -115,19 +114,37 @@ function build_ceph()
 {
     echo "***** Building ceph *****"
     for hostname in ${hostnames[@]}; do
-        ssh ${ssh_arg} root@${hostname} "cd ${home_path}; bash ./build_ceph.sh >> ${log} 2>&1" &
+        ssh ${ssh_arg} root@${hostname} "cd ${proj_scripts_path}; bash ./build_ceph.sh >> ${log} 2>&1" &
     done
     wait
 }
 
+# configure IPs
+function configure_ips()
+{
+    echo "***** Configuring ips *****"
+    # for hostname in ${hostnames[@]}; do
+    #     ssh ${ssh_arg} root@${hostname} "cd ${proj_scripts_path}; bash ./configure_ips.sh >> ${log} 2>&1" &
+    # done
+    len=${#hostnames[@]}
+    for ((idx=0; idx<${len}; idx++)); do
+        echo "Configuring hostname: ${hostnames[idx]}, ip: ${local_ips[idx]}"
+        ssh ${ssh_arg} root@${hostname} << ENDSSH
+            cd ${proj_scripts_path}
+            bash ./configure_ips.sh ${local_ips[idx]}
+ENDSSH
+    done
+}
+
 function setup_fn()
 {
-    setup_public_key
-    mount_sda4
+    # setup_public_key
+    # mount_sda4
     clone_proj_repo
-    upload_config
-    install_dependencies
-    build_ceph
+    # upload_config
+    # install_dependencies
+    # build_ceph
+    configure_ips
 }
 
 setup_fn
