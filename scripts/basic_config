@@ -9,6 +9,7 @@
 
 ##### versions
 ceph_version="17.2.6"
+babeltrace_version="1.5.4"
 
 ##### experiment machines
 hostnames=(clnode274.clemson.cloudlab.us 
@@ -19,9 +20,10 @@ client=(clnode274.clemson.cloudlab.us)
 servers=(clnode257.clemson.cloudlab.us 
          clnode280.clemson.cloudlab.us 
          clnode253.clemson.cloudlab.us)
+node_num=4
 
 ##### basic
-cloudlab_username="CS0522"
+username="CS0522"
 # project name
 proj_name="ceph-icfs-comp"
 # github username
@@ -38,10 +40,16 @@ proj_scripts_path="${proj_setup_path}/scripts"
 # CloudLab server nodes local ips
 server_local_ips="10.10.1.2,10.10.1.3,10.10.1.4"
 
-##### archives filename
+##### third-party related
 # ceph archive
 ceph_archive="ceph-${ceph_version}.tar.gz"
 ceph_download_base_path="https://download.ceph.com/tarballs"
+# ninja github repo
+ninja_repo="https://github.com/ninja-build/ninja.git"
+# rabbitmq repo for yum
+rabbitmq_repo="rabbitmq.repo"
+# babeltrace github repo
+babeltrace_repo="https://github.com/efficios/babeltrace.git"
 
 ##### run
 # project output path
