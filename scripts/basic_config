@@ -45,6 +45,29 @@ local_ips=("10.10.1.1"
            "10.10.1.4")
 netmask="24"
 
+##### ceph configs
+# ceph path
+ceph_path="${home_path}/ceph-${ceph_version}"
+ceph_bin_path="${ceph_path}/build/bin"
+ceph_conf_path="/etc/ceph"
+ceph_data_base_path="/var/lib/ceph"
+# keep the same as fsid in ceph.conf
+fsid="e3e18617-0d92-4864-9de6-731f2f530802"
+# ceph.mon.keyring save path
+mon_keyring_path="/tmp"
+# ceph.client.admin.keyring save path
+client_admin_keyring_path="/etc/ceph"
+# ceph.keyring save path
+keyring_path="${ceph_data_base_path}/bootstrap-osd"
+# monmap save path
+monmap_path="/tmp"
+# monitor 数据目录
+mon_data_path="${ceph_data_base_path}/mon"
+# manager 数据目录
+mgr_data_path="${ceph_data_base_path}/mgr"
+# osd 数据目录
+osd_data_path="${ceph_data_base_path}/osd"
+
 ##### third-party related
 # ceph archive
 ceph_archive="ceph-${ceph_version}.tar.gz"
@@ -66,9 +89,6 @@ proj_output_path="${home_path}/outputs"
 nvme_dev="nvme0n1"
 # filesystem: ext4
 fs_type="ext4"
-# NIC port
-# TODO: can be retrived by ifconfig and awk
-nic_port="ens2f0np0"
 
 
 ##### ssh args

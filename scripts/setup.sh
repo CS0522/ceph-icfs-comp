@@ -19,7 +19,7 @@ function usage()
 
 ##### args #####
 
-log="${home_path}/setup.log"
+log="setup.log"
 
 ##### params #####
 
@@ -51,6 +51,18 @@ function setup_public_key()
 ENDSSH
         ssh ${ssh_arg} ${username}@${hostname} << ENDSSH
             sudo bash -c "cat /users/${username}/id_rsa.pub >> /root/.ssh/authorized_keys"
+ENDSSH
+    done
+}
+
+# set hostname
+function set_hostname()
+{
+    local len=${#hostnames[@]}
+    for ((idx=0; idx<${len}; idx++)); do
+        echo "Setting hostname: ${hostnames[idx]} as: node${idx}"
+        ssh ${ssh_arg} root@${hostnames[idx]} << ENDSSH
+            hostnamectl set-hostname node${idx}
 ENDSSH
     done
 }
@@ -123,25 +135,90 @@ function build_ceph()
 function configure_ips()
 {
     echo "***** Configuring ips *****"
-    len=${#hostnames[@]}
+    local len=${#hostnames[@]}
     for ((idx=0; idx<${len}; idx++)); do
         echo "Configuring hostname: ${hostnames[idx]}, ip: ${local_ips[idx]}"
         ssh ${ssh_arg} root@${hostnames[idx]} << ENDSSH
             cd ${proj_scripts_path}
-            bash ./configure_ips.sh ${local_ips[idx]}
+            bash ./configure_ips.sh ${idx}
 ENDSSH
     done
 }
 
+log="configure.log"
+
+# configure ceph
+function configure_ceph()
+{
+    echo "***** Configuring ceph *****"
+    local len=${#hostnames[@]}
+    # create directories
+    for ((idx=1; idx<${len}; idx++)); do
+        ssh ${ssh_arg} root@${hostnames[idx]} << ENDSSH
+            mkdir -p ${ceph_conf_path}
+            mkdir -p ${ceph_data_base_path}
+            mkdir -p ${keyring_path}
+            mkdir -p ${mon_data_path}
+            mkdir -p ${mgr_data_path}
+            mkdir -p ${osd_data_path}
+ENDSSH
+    done
+    # setup 'ceph.conf'
+    for ((idx=1; idx<${len}; idx++)); do
+        ssh ${ssh_arg} root@${hostnames[idx]} << ENDSSH
+            cd ${proj_scripts_path}
+            bash ./configure_ceph_setup_conf.sh
+ENDSSH
+    done
+    # create keyring on one node
+    ssh ${ssh_arg} root@${hostnames[1]} << ENDSSH
+        cd ${proj_scripts_path}
+        bash ./configure_ceph_create_keyring.sh
+ENDSSH
+    # create monmap on one node
+    ssh ${ssh_arg} root@${hostnames[1]} << ENDSSH
+        cd ${proj_scripts_path}
+        bash ./configure_ceph_create_monmap.sh
+ENDSSH
+    # synchronize keyring, monmap
+    ssh ${ssh_arg} root@${hostnames[1]} << ENDSSH
+        cd ${proj_scripts_path}
+        bash ./configure_ceph_sync_keyring_monmap.sh
+ENDSSH
+    # create monitor
+    for ((idx=1; idx<${len}; idx++)); do
+        ssh ${ssh_arg} root@${hostnames[idx]} << ENDSSH
+            cd ${proj_scripts_path}
+            bash ./configure_ceph_create_mon.sh
+ENDSSH
+    done
+    # create manager on one node
+    ssh ${ssh_arg} root@${hostnames[1]} << ENDSSH
+        cd ${proj_scripts_path}
+        bash ./configure_ceph_create_mgr.sh
+ENDSSH
+
+
+    # verify ceph status
+    ssh ${ssh_arg} root@${hostnames[1]} << ENDSSH
+        cd ${ceph_bin_path}
+        ./ceph -s
+ENDSSH
+    sleep 5
+
+}
+
 function setup_fn()
 {
-    # setup_public_key
-    # mount_sda4
-    # clone_proj_repo
-    # upload_config
-    # install_dependencies
-    # build_ceph
+    setup_public_key
+    set_hostname
+    mount_sda4
+    clone_proj_repo
+    upload_config
+    install_dependencies
+    build_ceph
     configure_ips
+    configure_ceph
 }
 
 setup_fn

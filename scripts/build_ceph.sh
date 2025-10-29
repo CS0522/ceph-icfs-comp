@@ -27,7 +27,7 @@ function build_ceph()
     
     cd ceph-${ceph_version} && rm -rf build
     ./do_cmake.sh
-    cd build && ninja
+    cd build && ninja && ninja install && ldconfig
 }
 
 build_ceph
