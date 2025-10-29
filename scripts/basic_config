@@ -72,9 +72,11 @@ osd_data_path="${ceph_data_base_path}/osd"
 # ceph archive
 ceph_archive="ceph-${ceph_version}.tar.gz"
 ceph_download_base_path="https://download.ceph.com/tarballs"
+# ceph yum repo
+ceph_repo="ceph.repo"
 # ninja github repo
 ninja_repo="https://github.com/ninja-build/ninja.git"
-# rabbitmq repo for yum
+# rabbitmq yum repo
 rabbitmq_repo="rabbitmq.repo"
 # babeltrace github repo
 babeltrace_repo="https://github.com/efficios/babeltrace.git"

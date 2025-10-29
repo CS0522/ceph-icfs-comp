@@ -101,7 +101,19 @@ function install_babeltrace_devel()
 }
 
 
-install_by_yum
-build_ninja
-install_rabbitmq
-install_babeltrace_devel
+# install_by_yum
+# build_ninja
+# install_rabbitmq
+# install_babeltrace_devel
+
+
+function install_libthrift()
+{
+    yum install -y vim git cmake gcc automake wget
+    yum remove -y thrift-devel
+    cd ${home_path}
+    wget https://www.rpmfind.net/linux/mageia/distrib/8/x86_64/media/core/updates/lib64thrift0-0.14.0-1.mga8.x86_64.rpm
+    yum install -y lib64thrift0-0.14.0-1.mga8.x86_64.rpm
+}
+
+install_libthrift

@@ -30,4 +30,18 @@ function build_ceph()
     cd build && ninja && ninja install && ldconfig
 }
 
-build_ceph
+# build_ceph
+
+
+function add_ceph_repo()
+{
+    cp ${SCRIPT_DIR}/${ceph_repo} /etc/yum.repos.d/
+}
+
+function install_ceph()
+{
+    yum install -y ceph ceph-mon ceph-mgr ceph-osd ceph-volume
+}
+
+add_ceph_repo
+install_ceph

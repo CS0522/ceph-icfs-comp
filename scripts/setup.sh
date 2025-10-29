@@ -218,7 +218,7 @@ function setup_fn()
     install_dependencies
     build_ceph
     configure_ips
-    configure_ceph
+    # configure_ceph
 }
 
 setup_fn
