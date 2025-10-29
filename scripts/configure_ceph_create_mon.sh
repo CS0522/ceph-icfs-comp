@@ -32,7 +32,7 @@ function create_mon()
     # 启动 monitor 服务
     touch ${mon_data_path}/ceph-${hostname} /done
     ./ceph-mon -i ${hostname}
-    ./ceph mon enable-msgr2
+    # ./ceph mon enable-msgr2
 }
 
 create_mon

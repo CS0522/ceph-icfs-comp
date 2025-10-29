@@ -157,7 +157,7 @@ function configure_ceph()
         ssh ${ssh_arg} root@${hostnames[idx]} << ENDSSH
             mkdir -p ${ceph_conf_path}
             mkdir -p ${ceph_data_base_path}
-            mkdir -p ${keyring_path}
+            mkdir -p ${ceph_keyring_path}
             mkdir -p ${mon_data_path}
             mkdir -p ${mgr_data_path}
             mkdir -p ${osd_data_path}
@@ -181,10 +181,13 @@ ENDSSH
         bash ./configure_ceph_create_monmap.sh
 ENDSSH
     # synchronize keyring, monmap
-    ssh ${ssh_arg} root@${hostnames[1]} << ENDSSH
-        cd ${proj_scripts_path}
-        bash ./configure_ceph_sync_keyring_monmap.sh
+    for ((idx=2; idx<${len}; idx++)); do
+        local remote_hostname=${hostnames[idx]}
+        ssh ${ssh_arg} root@${hostnames[1]} << ENDSSH
+            cd ${proj_scripts_path}
+            bash ./configure_ceph_sync_keyring_monmap.sh ${remote_hostname}
 ENDSSH
+    done
     # create monitor
     for ((idx=1; idx<${len}; idx++)); do
         ssh ${ssh_arg} root@${hostnames[idx]} << ENDSSH
@@ -197,7 +200,14 @@ ENDSSH
         cd ${proj_scripts_path}
         bash ./configure_ceph_create_mgr.sh
 ENDSSH
-
+    # create osd
+    for ((idx=1; idx<${len}; idx++)); do
+        local osd_idx=$((idx - 1))
+        ssh ${ssh_arg} root@${hostnames[idx]} << ENDSSH
+            cd ${proj_scripts_path}
+            bash ./configure_ceph_create_osd.sh ${osd_idx}
+ENDSSH
+    done
 
     # verify ceph status
     ssh ${ssh_arg} root@${hostnames[1]} << ENDSSH
@@ -207,6 +217,12 @@ ENDSSH
     sleep 5
 
 }
+
+function client_connect_rbd()
+{
+
+}
+
 
 function setup_fn()
 {
@@ -218,6 +234,8 @@ function setup_fn()
     install_dependencies
     build_ceph
     configure_ips
+    # FIXME: configure ceph 阶段的脚本还没功能测试，
+    #        按照文档手动配置 ceph
     # configure_ceph
 }
 

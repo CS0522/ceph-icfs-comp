@@ -109,7 +109,7 @@ function install_babeltrace_devel()
 
 function install_libthrift()
 {
-    yum install -y vim git cmake gcc automake wget
+    yum install -y vim git cmake gcc automake wget nvme-cli
     yum remove -y thrift-devel
     cd ${home_path}
     wget https://www.rpmfind.net/linux/mageia/distrib/8/x86_64/media/core/updates/lib64thrift0-0.14.0-1.mga8.x86_64.rpm
