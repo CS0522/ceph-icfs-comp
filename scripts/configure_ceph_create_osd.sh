@@ -30,7 +30,7 @@ function create_osd()
     # 创建 OSD 所在的目录
     mkdir -p ${osd_data_path}
 
-    ceph-volume lvm prepare --data /dev/${nvme_dev}p1 --block.db /dev/${nvme_dev}p2 --block.wal /dev/${nvme_dev}p3
+    ceph-volume lvm prepare --data /dev/${data_dev} --block.db /dev/${block_db_dev} --block.wal /dev/${block_wal_dev}
 
     ceph-osd -i ${osd_idx}
 }

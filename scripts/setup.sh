@@ -63,6 +63,9 @@ function set_hostname()
         echo "Setting hostname: ${hostnames[idx]} as: node${idx}"
         ssh ${ssh_arg} root@${hostnames[idx]} << ENDSSH
             hostnamectl set-hostname node${idx}
+            echo "127.0.0.1 localhost node${idx}" >> /etc/hosts
+            sed -i.bak '1d' /etc/hosts
+            cat /etc/hosts
 ENDSSH
     done
 }
@@ -83,12 +86,25 @@ ENDSSH
     done
 }
 
+function partition_nvme()
+{
+    echo "***** Partitioning nvme disk *****"
+    local len=${#hostnames[@]}
+    for ((idx=1; idx<${len}; idx++)); do
+        ssh ${ssh_arg} root@${hostnames[idx]} << ENDSSH
+            cd ${proj_scripts_path}
+            bash partition_nvme.sh
+ENDSSH
+    done
+}
+
 # clone project repo
 function clone_proj_repo()
 {
     echo "***** Cloning project repo *****"
     for hostname in ${hostnames[@]}; do
         ssh ${ssh_arg} root@${hostname} << ENDSSH
+            mkdir -p ${home_path}
 		    cd ${home_path}
             rm -rf ${proj_name}
             git clone ${proj_repo}
@@ -218,10 +234,10 @@ ENDSSH
 
 }
 
-function client_connect_rbd()
-{
+# function client_connect_rbd()
+# {
 
-}
+# }
 
 
 function setup_fn()
@@ -229,14 +245,13 @@ function setup_fn()
     setup_public_key
     set_hostname
     mount_sda4
+    partition_nvme
     clone_proj_repo
     upload_config
     install_dependencies
     build_ceph
     configure_ips
-    # FIXME: configure ceph 阶段的脚本还没功能测试，
-    #        按照文档手动配置 ceph
-    # configure_ceph
+    configure_ceph
 }
 
 setup_fn

@@ -18,6 +18,7 @@ source ${SCRIPT_DIR}/basic_config
 
 ##### configure ceph #####
 
+# TODO: 根据大小占比计算百分比
 function partition_nvme()
 {
     yum install -y nvme-cli
