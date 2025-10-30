@@ -2,14 +2,6 @@
 
 # Run this script on local machine.
 
-# Steps:
-# 1. 上传本地机器 PubKey 以支持 root 登录
-# 2. 挂载 sda4
-# 3. clone 仓库
-# 4. 上传本地 basic_config 配置
-# 5. 远程机器执行安装、编译，异步
-# 6. 配置静态 IP
-
 # set -x
 
 function usage()
@@ -61,9 +53,10 @@ function set_hostname()
     local len=${#hostnames[@]}
     for ((idx=0; idx<${len}; idx++)); do
         echo "Setting hostname: ${hostnames[idx]} as: node${idx}"
+        local new_hostname="node${idx}"
         ssh ${ssh_arg} root@${hostnames[idx]} << ENDSSH
-            hostnamectl set-hostname node${idx}
-            echo "127.0.0.1 localhost node${idx}" >> /etc/hosts
+            hostnamectl set-hostname ${new_hostname}
+            echo "127.0.0.1 localhost ${new_hostname}" >> /etc/hosts
             sed -i.bak '1d' /etc/hosts
             cat /etc/hosts
 ENDSSH
@@ -234,10 +227,45 @@ ENDSSH
 
 }
 
-# function client_connect_rbd()
-# {
+function client_connect_rbd()
+{
+    # client retrieve keyring, ceph.conf
+    ssh ${ssh_arg} root@${hostnames[0]} << ENDSSH
+        scp ${scp_arg} root@node1:${client_admin_keyring_path}/ceph.client.admin.keyring ${client_admin_keyring_path}/ceph.client.admin.keyring
+        scp ${scp_arg} root@node1:${ceph_conf_path}/ceph.conf  ${ceph_conf_path}/ceph.conf 
+ENDSSH
 
-# }
+    # create rbdpool on ceph cluster
+    ssh ${ssh_arg} root@${hostnames[1]} << ENDSSH
+        cd ${ceph_bin_path}
+        ./ceph osd pool create ${rbd_pool_name}
+        ./rbd pool init ${rbd_pool_name}
+        ./ceph df
+ENDSSH
+
+    # create rbd image
+    ssh ${ssh_arg} root@${hostnames[1]} << ENDSSH
+        cd ${ceph_bin_path}
+        ./rbd create ${rbd_pool_name}/${rbd_image_name} --size=${rbd_image_size}
+        ./rbd list -p ${rbd_pool_name}
+        ./rbd info ${rbd_pool_name}/${rbd_image_name}
+ENDSSH
+
+    # client mount rbd device
+    ssh ${ssh_arg} root@${hostnames[0]} << ENDSSH
+        cd ${ceph_bin_path}
+        ./rbd map ${rbd_pool_name}/${rbd_image_name}
+        lsblk
+ENDSSH
+
+    # client mount rbd at mount point
+    ssh ${ssh_arg} root@${hostnames[0]} << ENDSSH
+        mkfs.xfs /dev/rbd0
+        mkdir -p ${rbd_dev_mount_point}
+        mount /dev/rbd0 ${rbd_dev_mount_point}
+        lsblk
+ENDSSH
+}
 
 
 function setup_fn()
@@ -255,3 +283,4 @@ function setup_fn()
 }
 
 setup_fn
+client_connect_rbd

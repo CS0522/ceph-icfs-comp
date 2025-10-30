@@ -12,14 +12,14 @@ ceph_version="17.2.6"
 babeltrace_version="1.5.4"
 
 ##### experiment machines
-hostnames=(clnode274.clemson.cloudlab.us 
-           clnode257.clemson.cloudlab.us 
-           clnode280.clemson.cloudlab.us 
-           clnode253.clemson.cloudlab.us)
-client=(clnode274.clemson.cloudlab.us)
-servers=(clnode257.clemson.cloudlab.us 
-         clnode280.clemson.cloudlab.us 
-         clnode253.clemson.cloudlab.us)
+hostnames=(ms0845.utah.cloudlab.us 
+           ms0844.utah.cloudlab.us
+           ms0834.utah.cloudlab.us
+           ms0826.utah.cloudlab.us)
+client=(ms0845.utah.cloudlab.us)
+servers=(ms0844.utah.cloudlab.us
+         ms0834.utah.cloudlab.us
+         ms0826.utah.cloudlab.us)
 node_num=4
 
 ##### basic
@@ -85,6 +85,13 @@ block_wal_dev="${nvme_dev}p3"
 data_size_ratio=33
 block_db_size_ratio=33
 block_wal_size_ratio=33
+
+
+##### ceph client connection by RBD
+rbd_pool_name="rbdpool"
+rbd_image_name="test"
+rbd_image_size="200G"
+rbd_dev_mount_point="/mnt/rbd"
 
 
 ##### third-party related
