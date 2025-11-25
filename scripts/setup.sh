@@ -272,15 +272,15 @@ function setup_fn()
 {
     setup_public_key
     set_hostname
-    mount_sda4
-    partition_nvme
+    # mount_sda4
+    # partition_nvme
     clone_proj_repo
     upload_config
     install_dependencies
     build_ceph
-    configure_ips
+    # configure_ips
     configure_ceph
 }
 
-setup_fn
+# setup_fn
 client_connect_rbd

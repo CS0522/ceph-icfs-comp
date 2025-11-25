@@ -8,18 +8,19 @@
 # These are basic params, specific params should be configured in each sub-config file
 
 ##### versions
+os_el_version="el8"
 ceph_version="17.2.6"
 babeltrace_version="1.5.4"
 
 ##### experiment machines
-hostnames=(ms0845.utah.cloudlab.us 
-           ms0844.utah.cloudlab.us
-           ms0834.utah.cloudlab.us
-           ms0826.utah.cloudlab.us)
-client=(ms0845.utah.cloudlab.us)
-servers=(ms0844.utah.cloudlab.us
-         ms0834.utah.cloudlab.us
-         ms0826.utah.cloudlab.us)
+hostnames=(clnode339.clemson.cloudlab.us 
+           clnode386.clemson.cloudlab.us
+           clnode320.clemson.cloudlab.us
+           clnode390.clemson.cloudlab.us)
+client=(clnode339.clemson.cloudlab.us )
+servers=(clnode386.clemson.cloudlab.us
+           clnode320.clemson.cloudlab.us
+           clnode390.clemson.cloudlab.us)
 node_num=4
 
 ##### basic
@@ -82,9 +83,9 @@ data_dev="${nvme_dev}p1"
 block_db_dev="${nvme_dev}p2"
 block_wal_dev="${nvme_dev}p3"
 # TODO: partition_nvme 根据占比计算分区百分比
-data_size_ratio=33
-block_db_size_ratio=33
-block_wal_size_ratio=33
+data_size_ratio=40
+block_db_size_ratio=30
+block_wal_size_ratio=30
 
 
 ##### ceph client connection by RBD
@@ -99,7 +100,7 @@ rbd_dev_mount_point="/mnt/rbd"
 ceph_archive="ceph-${ceph_version}.tar.gz"
 ceph_download_base_path="https://download.ceph.com/tarballs"
 # ceph yum repo
-ceph_repo="ceph.repo"
+ceph_repo="ceph_${os_el_version}.repo"
 # ninja github repo
 ninja_repo="https://github.com/ninja-build/ninja.git"
 # rabbitmq yum repo
