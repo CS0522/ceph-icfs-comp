@@ -38,6 +38,8 @@ function setup_public_key()
         scp ${scp_arg} ~/.ssh/id_rsa.pub ${username}@${hostname}:~/
         ssh ${ssh_arg} ${username}@${hostname} << ENDSSH
             cd ~
+            sudo yum install -y python3
+            sudo ln -s /usr/bin/python3 /usr/bin/python
             wget https://raw.githubusercontent.com/CS0522/rocksdb-rubbledb/rubble/rubble/setup-keys.sh
             sudo bash setup-keys.sh
 ENDSSH
@@ -198,6 +200,7 @@ ENDSSH
 ENDSSH
     done
     # create monitor
+    # FIXME: 这里可能需要手动启动一下
     for ((idx=1; idx<${len}; idx++)); do
         ssh ${ssh_arg} root@${hostnames[idx]} << ENDSSH
             cd ${proj_scripts_path}
@@ -272,9 +275,9 @@ function setup_fn()
 {
     setup_public_key
     set_hostname
-    # mount_sda4
-    # partition_nvme
+    mount_sda4
     clone_proj_repo
+    partition_nvme
     upload_config
     install_dependencies
     build_ceph
@@ -282,5 +285,5 @@ function setup_fn()
     configure_ceph
 }
 
-# setup_fn
+setup_fn
 client_connect_rbd

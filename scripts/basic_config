@@ -13,14 +13,14 @@ ceph_version="17.2.6"
 babeltrace_version="1.5.4"
 
 ##### experiment machines
-hostnames=(clnode339.clemson.cloudlab.us 
-           clnode386.clemson.cloudlab.us
-           clnode320.clemson.cloudlab.us
-           clnode390.clemson.cloudlab.us)
-client=(clnode339.clemson.cloudlab.us )
-servers=(clnode386.clemson.cloudlab.us
-           clnode320.clemson.cloudlab.us
-           clnode390.clemson.cloudlab.us)
+hostnames=(clnode269.clemson.cloudlab.us 
+           clnode270.clemson.cloudlab.us
+           clnode255.clemson.cloudlab.us
+           clnode273.clemson.cloudlab.us)
+client=(clnode269.clemson.cloudlab.us )
+servers=(clnode270.clemson.cloudlab.us
+           clnode255.clemson.cloudlab.us
+           clnode273.clemson.cloudlab.us)
 node_num=4
 
 ##### basic
